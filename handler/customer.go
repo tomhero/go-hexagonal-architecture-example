@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bank/errs"
 	"bank/service"
 	"encoding/json"
 	"fmt"
@@ -42,6 +43,14 @@ func (h customerHandler) GetCustomer(w http.ResponseWriter, r *http.Request) {
 
 	customer, err := h.custSrv.GetCustomer(customerId)
 	if err != nil {
+		// NOTE : Service มีการ return เป็น AppError ออกมาเลยต้อง cast type ดูก่อน
+		appErr, ok := err.(errs.AppError)
+		if ok {
+			w.WriteHeader(appErr.Code)
+			fmt.Fprintln(w, appErr.Message)
+			return
+		}
+
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintln(w, err)
 		return

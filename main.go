@@ -6,7 +6,6 @@ import (
 	"bank/repository"
 	"bank/service"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -37,7 +36,6 @@ func main() {
 	// NOTE : สามารถใช้ Regex ต่อท้ายเพื่อกำหนดให้เป็น Pattern ที่ถูกต้องได้เลย
 	router.HandleFunc("/customers/{customerID:[0-9]+}", customerHandler.GetCustomer).Methods(http.MethodGet)
 
-	log.Printf("Banking Service online at port %v", viper.GetInt("app.port"))
 	logs.Info(fmt.Sprintf("Banking Service online at port %v", viper.GetInt("app.port")))
 	http.ListenAndServe(fmt.Sprintf(":%v", viper.GetInt("app.port")), router)
 }
@@ -76,7 +74,7 @@ func initDatabase() *sqlx.DB {
 		viper.GetInt("db.port"),
 		viper.GetString("db.database"),
 	)
-	log.Printf("Data Source Config = %v", dataSourceName)
+	logs.Info(fmt.Sprintf("Data Source Config = %v", dataSourceName))
 
 	db, err := sqlx.Open(viper.GetString("db.driver"), dataSourceName)
 	if err != nil {

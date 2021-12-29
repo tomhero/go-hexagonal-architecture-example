@@ -22,13 +22,13 @@ func main() {
 	db := initDatabase()
 
 	customerRepository := repository.NewCustomerRepositoryDB(db)
-	_ = customerRepository
+	// _ = customerRepository
 
 	// NOTE : ตรงนี้สามารถใช้เป็น mock repository แทนก็ได้
-	customerRepositoryMock := repository.NewCustomerRepositoryMock()
+	// customerRepositoryMock := repository.NewCustomerRepositoryMock()
 	// _ = customerRepositoryMock
 
-	customerService := service.NewCustomerService(customerRepositoryMock)
+	customerService := service.NewCustomerService(customerRepository)
 	customerHandler := handler.NewCustomerHandler(customerService)
 
 	router := mux.NewRouter()
@@ -38,31 +38,6 @@ func main() {
 
 	log.Printf("Banking Service online at port %v", viper.GetInt("app.port"))
 	http.ListenAndServe(fmt.Sprintf(":%v", viper.GetInt("app.port")), router)
-
-	// customers, err := customerRepository.GetAll()
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println(customers)
-
-	// customer, err := customerRepository.GetById(2001)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println(customer)
-
-	// เรียกใช้จาก Service ได้เลย (ปั้น data / business logic)
-	// customers, err := customerService.GetCustomers()
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println(customers)
-
-	// customer, err := customerService.GetCustomer(2001)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println(customer)
 }
 
 func initConfig() {

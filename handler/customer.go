@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bank/logs"
 	"bank/service"
 	"encoding/json"
 	"net/http"
@@ -31,7 +32,10 @@ func (h customerHandler) GetCustomers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("content-type", "application/json")
-	json.NewEncoder(w).Encode(customers)
+	err = json.NewEncoder(w).Encode(customers)
+	if err != nil {
+		logs.Error(err)
+	}
 }
 
 func (h customerHandler) GetCustomer(w http.ResponseWriter, r *http.Request) {
@@ -46,5 +50,8 @@ func (h customerHandler) GetCustomer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("content-type", "application/json")
-	json.NewEncoder(w).Encode(customer)
+	err = json.NewEncoder(w).Encode(customer)
+	if err != nil {
+		logs.Error(err)
+	}
 }

@@ -10,10 +10,10 @@ func NewAccountRepositoryDB(db *sqlx.DB) accountRepositoryDB {
 	return accountRepositoryDB{db: db}
 }
 
-func (r accountRepositoryDB) GetAll() ([]Account, error) {
+func (r accountRepositoryDB) GetAll(customerID int) ([]Account, error) {
 	accounts := []Account{}
-	query := "SELECT account_id, customer_id, opening_date, account_type, amount, status FROM customers"
-	err := r.db.Select(&accounts, query)
+	query := "SELECT account_id, customer_id, opening_date, account_type, amount, status FROM accounts WHERE customer_id = ?"
+	err := r.db.Select(&accounts, query, customerID)
 	if err != nil {
 		return nil, err
 	}

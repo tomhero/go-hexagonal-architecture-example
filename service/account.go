@@ -6,8 +6,8 @@ type NewAccountRequest struct {
 	// AccountID   int    `json:"account_id"`
 	// CustomerID  int    `json:"customer_id"`
 	// OpeningDate string `json:"opening_date"`
-	Accountype string `json:"account_type"`
-	Amount     int    `json:"amount"`
+	Accountype string  `json:"account_type"`
+	Amount     float32 `json:"amount"`
 	// Status      int8   `json:"status"`
 }
 
@@ -15,10 +15,10 @@ type NewAccountRequest struct {
 type AccountResponse struct {
 	AccountID int `json:"account_id"`
 	// CustomerID  int    `json:"customer_id"` // NOTE : ไม่ได้ใช้เนื่องจาก Request มันมีการ Search มาจากอันนี้อยู่แล้ว
-	OpeningDate string `json:"opening_date"`
-	Accountype  string `json:"account_type"`
-	Amount      int    `json:"amount"`
-	Status      int8   `json:"status"`
+	OpeningDate string  `json:"opening_date"`
+	Accountype  string  `json:"account_type"`
+	Amount      float32 `json:"amount"`
+	Status      int     `json:"status"`
 }
 
 type AccountService interface {

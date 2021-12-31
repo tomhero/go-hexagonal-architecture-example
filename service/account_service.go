@@ -42,8 +42,8 @@ func (s accountService) NewAcccount(customerID int, req NewAccountRequest) (*Acc
 	return &responseData, nil
 }
 
-func (s accountService) GetAccounts(id int) ([]AccountResponse, error) {
-	accounts, err := s.accRepo.GetAll()
+func (s accountService) GetAccounts(customerID int) ([]AccountResponse, error) {
+	accounts, err := s.accRepo.GetAll(customerID)
 	if err != nil {
 		// NOTE : ตรงนี้คือ Technical error
 		logs.Error(err)

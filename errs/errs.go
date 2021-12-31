@@ -7,7 +7,7 @@ type AppError struct {
 	Message string
 }
 
-// NOTE : @Implement จาก base error interface เหมือนใน Java ด้วย Receiver function
+// NOTE : @override จาก base error interface เหมือนใน Java ด้วย Receiver function
 func (e AppError) Error() string {
 	return e.Message
 }
@@ -25,5 +25,16 @@ func NewUnexpectedError() error {
 	return AppError{
 		Code:    http.StatusInternalServerError,
 		Message: "unexpected error occures",
+	}
+}
+
+func NewValidationError(message string) error {
+	// defaultMessage := "validation error occures"
+	// if message == "" {
+	// 	message = defaultMessage
+	// }
+	return AppError{
+		Code:    http.StatusUnprocessableEntity,
+		Message: message,
 	}
 }

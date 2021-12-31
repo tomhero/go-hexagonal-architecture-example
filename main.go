@@ -39,8 +39,8 @@ func main() {
 	// NOTE : สามารถใช้ Regex ต่อท้ายเพื่อกำหนดให้เป็น Pattern ที่ถูกต้องได้เลย
 	router.HandleFunc("/customers/{customerID:[0-9]+}", customerHandler.GetCustomer).Methods(http.MethodGet)
 
-	router.HandleFunc("/customers/customerID{}:[0-9]+}/accounts", accountHandler.GetAccounts).Methods(http.MethodGet)
-	router.HandleFunc("/customers/customerID{}:[0-9]+}/accounts", accountHandler.NewAccount).Methods(http.MethodPost)
+	router.HandleFunc("/customers/{customerID:[0-9]+}/accounts", accountHandler.GetAccounts).Methods(http.MethodGet)
+	router.HandleFunc("/customers/{customerID:[0-9]+}/accounts", accountHandler.NewAccount).Methods(http.MethodPost)
 
 	logs.Info(fmt.Sprintf("Banking Service online at port %v", viper.GetInt("app.port")))
 	http.ListenAndServe(fmt.Sprintf(":%v", viper.GetInt("app.port")), router)

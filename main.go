@@ -22,6 +22,7 @@ func main() {
 	db := initDatabase()
 
 	customerRepository := repository.NewCustomerRepositoryDB(db)
+	accountRepository := repository.NewAccountRepositoryDB(db)
 	// _ = customerRepository
 
 	// NOTE : ตรงนี้สามารถใช้เป็น mock repository แทนก็ได้
@@ -30,11 +31,16 @@ func main() {
 
 	customerService := service.NewCustomerService(customerRepository)
 	customerHandler := handler.NewCustomerHandler(customerService)
+	accountService := service.NewAccountService(accountRepository)
+	accountHandler := handler.NewAccountHandler(accountService)
 
 	router := mux.NewRouter()
 	router.HandleFunc("/customers", customerHandler.GetCustomers).Methods(http.MethodGet)
 	// NOTE : สามารถใช้ Regex ต่อท้ายเพื่อกำหนดให้เป็น Pattern ที่ถูกต้องได้เลย
 	router.HandleFunc("/customers/{customerID:[0-9]+}", customerHandler.GetCustomer).Methods(http.MethodGet)
+
+	router.HandleFunc("/customers/customerID{}:[0-9]+}/accounts", accountHandler.GetAccounts).Methods(http.MethodGet)
+	router.HandleFunc("/customers/customerID{}:[0-9]+}/accounts", accountHandler.NewAccount).Methods(http.MethodPost)
 
 	logs.Info(fmt.Sprintf("Banking Service online at port %v", viper.GetInt("app.port")))
 	http.ListenAndServe(fmt.Sprintf(":%v", viper.GetInt("app.port")), router)

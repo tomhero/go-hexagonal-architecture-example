@@ -44,7 +44,10 @@ func (h accountHandler) NewAccount(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated) // NOTE : ตอบ HTTP Status 201 ตาม REST API
 	w.Header().Set("content-type", "application/json")
 	// NOTE : .Encode รับเป็น pointer เช่นกันแต่ว่า responseData มันเป็น pointer อยู่แล้วหน่ะ
-	json.NewEncoder(w).Encode(responseData)
+	err = json.NewEncoder(w).Encode(responseData)
+	if err != nil {
+		logs.Error(err)
+	}
 }
 
 func (h accountHandler) GetAccounts(w http.ResponseWriter, r *http.Request) {

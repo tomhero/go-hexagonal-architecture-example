@@ -27,7 +27,7 @@ func (r accountRepositoryDB) Create(acc Account) (*Account, error) {
 	`
 	result, err := r.db.Exec(
 		query,
-		acc.AccountID,
+		acc.CustomerID,
 		acc.OpeningDate,
 		acc.Accountype,
 		acc.Amount,

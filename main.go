@@ -22,16 +22,15 @@ func main() {
 	db := initDatabase()
 
 	customerRepository := repository.NewCustomerRepositoryDB(db)
-	accountRepository := repository.NewAccountRepositoryDB(db)
-	// _ = customerRepository
+	// accountRepository := repository.NewAccountRepositoryDB(db)
 
 	// NOTE : ตรงนี้สามารถใช้เป็น mock repository แทนก็ได้
 	// customerRepositoryMock := repository.NewCustomerRepositoryMock()
-	// _ = customerRepositoryMock
+	accountRepositoryMock := repository.NewAccountRepositoryMock()
 
 	customerService := service.NewCustomerService(customerRepository)
 	customerHandler := handler.NewCustomerHandler(customerService)
-	accountService := service.NewAccountService(accountRepository)
+	accountService := service.NewAccountService(accountRepositoryMock)
 	accountHandler := handler.NewAccountHandler(accountService)
 
 	router := mux.NewRouter()

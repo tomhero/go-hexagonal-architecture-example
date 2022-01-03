@@ -4,14 +4,40 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
+	"time"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/jmoiron/sqlx"
+	"github.com/spf13/viper"
 )
 
 func main() {
-	// NOTE : Using Fiber Web Framework
+	initTimeZone()
+	initConfig()
+	db := initDatabase()
+	_ = db
 
+	// NOTE : Using Fiber Web Framework
 	app := fiber.New()
+
+	// NOTE : Official Middleware
+	app.Use(logger.New())
+
+	app.Use(func(c *fiber.Ctx) error {
+		// Set some security headers:
+		c.Set("X-XSS-Protection", "1; mode=block")
+		c.Set("X-Content-Type-Options", "nosniff")
+		c.Set("X-Download-Options", "noopen")
+		c.Set("Strict-Transport-Security", "max-age=5184000")
+		c.Set("X-Frame-Options", "SAMEORIGIN")
+		c.Set("X-DNS-Prefetch-Control", "off")
+
+		// Go to next middleware:
+		return c.Next()
+	})
 
 	app.Get("/hello", func(c *fiber.Ctx) error {
 		// NOTE : Inline handler function
@@ -41,4 +67,51 @@ func nativeMux() error {
 	// http.ListenAndServe(":8002", nativeApp)
 
 	return nil
+}
+
+func initConfig() {
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml") // NOTE : หรืออาจจะเป็น json ก็ได้
+	viper.AddConfigPath(".")
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	// NOTE : ดึงจาก ENV มาทับก็ได้นะ !!!
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func initTimeZone() {
+	ict, err := time.LoadLocation("Asia/Bangkok")
+
+	if err != nil {
+		panic(err)
+	}
+
+	time.Local = ict
+}
+
+func initDatabase() *sqlx.DB {
+	dataSourceName := fmt.Sprintf(
+		"%v:%v@tcp(%v:%v)/%v",
+		viper.GetString("db.username"),
+		viper.GetString("db.password"),
+		viper.GetString("db.host"),
+		viper.GetInt("db.port"),
+		viper.GetString("db.database"),
+	)
+
+	db, err := sqlx.Open(viper.GetString("db.driver"), dataSourceName)
+	if err != nil {
+		panic(err)
+	}
+
+	// NOTE : Set Database config on the fly
+	db.SetConnMaxLifetime(3 * time.Minute)
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(10)
+
+	return db
 }

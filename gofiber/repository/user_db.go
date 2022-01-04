@@ -16,18 +16,18 @@ func (r userRespositoryDB) Create(user *User) error {
 		(username, password, role, customer_id)
 		VALUES(?, ?, ?, ?);`
 
-	_, err := r.db.Exec(query, user.username, user.password, user.role, user.customer_id)
+	_, err := r.db.Exec(query, user.Username, user.Password, user.Role, user.Customer_id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r userRespositoryDB) GetByUsername(userName string) (*User, error) {
+func (r userRespositoryDB) GetByUsername(username string) (*User, error) {
 	user := User{}
 	query := "SELECT username, password, role, customer_id FROM users where username=?"
 
-	err := r.db.Get(&user, query, userName)
+	err := r.db.Get(&user, query, username)
 	if err != nil {
 		return nil, err
 	}

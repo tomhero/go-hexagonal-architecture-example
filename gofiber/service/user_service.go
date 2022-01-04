@@ -4,7 +4,11 @@ import (
 	"gofiber/errs"
 	"gofiber/logs"
 	"gofiber/repository"
+	"strconv"
+	"time"
 
+	"github.com/golang-jwt/jwt"
+	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -38,12 +42,24 @@ func (s userService) Register(userRequest UserRequest) (*UserResponse, error) {
 		return nil, errs.NewUnexpectedError()
 	}
 
+	cliams := jwt.StandardClaims{
+		Issuer:    strconv.Itoa(user.Customer_id),
+		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+	}
+
+	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, cliams)
+
+	token, err := jwtToken.SignedString([]byte(viper.GetString("app.jwtSecret")))
+	if err != nil {
+		return nil, err
+	}
 	response := UserResponse{
 		Username: user.Username,
 		Password: user.Password,
 		Role:     user.Role,
-		Token:    "fake jwt token",
+		Token:    token,
 	}
+
 	return &response, nil
 }
 

@@ -4,11 +4,15 @@ go 1.17
 
 require golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
 
+require github.com/golang-jwt/jwt/v4 v4.0.0 // indirect
+
 require (
 	github.com/andybalholm/brotli v1.0.2 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/gofiber/fiber/v2 v2.24.0 // indirect
+	github.com/gofiber/jwt/v2 v2.2.7
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jmoiron/sqlx v1.3.4 // indirect
 	github.com/klauspost/compress v1.13.4 // indirect

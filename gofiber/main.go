@@ -16,6 +16,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/viper"
+
+	jwtware "github.com/gofiber/jwt/v2"
 )
 
 func main() {
@@ -43,6 +45,17 @@ func main() {
 		// Go to next middleware:
 		return c.Next()
 	})
+
+	app.Use("/hello", jwtware.New(jwtware.Config{
+		SigningMethod: "HS256",
+		SigningKey:    []byte(viper.GetString("app.jwtSecret")),
+		SuccessHandler: func(c *fiber.Ctx) error {
+			return c.Next()
+		},
+		ErrorHandler: func(c *fiber.Ctx, e error) error {
+			return fiber.ErrUnauthorized
+		},
+	}))
 
 	setupRouter(app, db)
 

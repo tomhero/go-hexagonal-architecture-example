@@ -28,7 +28,7 @@ func (s userService) Register(userRequest UserRequest) (*UserResponse, error) {
 		Username:    userRequest.Username,
 		Password:    hashedPassword,
 		Role:        fixRole,
-		Customer_id: userRequest.CustomerID,
+		Customer_id: int8(userRequest.CustomerID),
 	}
 
 	err = s.userRepo.Create(&user)

@@ -3,7 +3,7 @@ package service
 type UserRequest struct {
 	Username   string `json:"username"`
 	Password   string `json:"password"`
-	CustomerID int8   `json:"customer_id"`
+	CustomerID int    `json:"customer_id"`
 }
 
 type UserResponse struct {

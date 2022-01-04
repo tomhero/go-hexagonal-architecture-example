@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"gofiber/handler"
+	"gofiber/repository"
+	"gofiber/service"
 	"log"
 	"net/http"
 	"strings"
@@ -41,6 +44,14 @@ func main() {
 		return c.Next()
 	})
 
+	setupRouter(app, db)
+
+	app.Listen(fmt.Sprintf(":%v", viper.GetInt("app.port")))
+
+	_ = nativeMux()
+}
+
+func setupRouter(app *fiber.App, db *sqlx.DB) {
 	app.Get("/hello", func(c *fiber.Ctx) error {
 		// NOTE : Inline handler function
 		return c.SendString("Hello World!")
@@ -53,22 +64,12 @@ func main() {
 		return c.SendString(fmt.Sprintf("fn = %v | ln = %v", fName, lName))
 	})
 
-	app.Listen(":8000")
+	userRepository := repository.NewUserRepositoryDB(db)
+	userService := service.NewUserService(userRepository)
+	userHandler := handler.NewUserHandler(userService)
 
-	_ = nativeMux()
-}
-
-func nativeMux() error {
-	nativeApp := http.NewServeMux()
-
-	nativeApp.HandleFunc("/native/mux/{id}", func(rw http.ResponseWriter, r *http.Request) {
-		// NOTE : Manually Handle stuff....
-		log.Println(r.Method)
-	})
-
-	// http.ListenAndServe(":8002", nativeApp)
-
-	return nil
+	app.Post("/signup", userHandler.SignUpHandler)
+	app.Post("/login", userHandler.SignInHandler)
 }
 
 func initConfig() {
@@ -116,4 +117,17 @@ func initDatabase() *sqlx.DB {
 	db.SetMaxIdleConns(10)
 
 	return db
+}
+
+func nativeMux() error {
+	nativeApp := http.NewServeMux()
+
+	nativeApp.HandleFunc("/native/mux/{id}", func(rw http.ResponseWriter, r *http.Request) {
+		// NOTE : Manually Handle stuff....
+		log.Println(r.Method)
+	})
+
+	// http.ListenAndServe(":8002", nativeApp)
+
+	return nil
 }

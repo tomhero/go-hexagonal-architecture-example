@@ -25,14 +25,28 @@ func (h userHandler) SignUpHandler(c *fiber.Ctx) error {
 		return err
 	}
 	logs.Info(fmt.Sprintf("data = %#v", userReq))
-	respose, err := h.userSrv.Register(userReq)
+	response, err := h.userSrv.Register(userReq)
 	if err != nil {
 		return err
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(respose)
+	return c.Status(fiber.StatusCreated).JSON(response)
 }
 
 func (h userHandler) SignInHandler(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).SendString("Login user Success")
+	userReq := new(service.UserLoginRequest)
+	// data := map[string]interface{}{}
+	err := c.BodyParser(&userReq)
+
+	if err != nil {
+		return err
+	}
+
+	response, err := h.userSrv.Login(userReq.Username, userReq.Password)
+	if err != nil {
+		return err
+	}
+	response.Username = userReq.Username
+
+	return c.Status(fiber.StatusOK).JSON(response)
 }

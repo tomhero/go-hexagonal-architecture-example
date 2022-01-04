@@ -42,20 +42,14 @@ func (s userService) Register(userRequest UserRequest) (*UserResponse, error) {
 		return nil, errs.NewUnexpectedError()
 	}
 
-	cliams := jwt.StandardClaims{
-		Issuer:    strconv.Itoa(user.Customer_id),
-		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
-	}
-
-	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, cliams)
-
-	token, err := jwtToken.SignedString([]byte(viper.GetString("app.jwtSecret")))
+	token, err := generateToken(user.Customer_id)
 	if err != nil {
-		return nil, err
+		logs.Error(err)
+		return nil, errs.NewUnexpectedError()
 	}
+
 	response := UserResponse{
 		Username: user.Username,
-		Password: user.Password,
 		Role:     user.Role,
 		Token:    token,
 	}
@@ -73,9 +67,15 @@ func (s userService) Login(username string, password string) (*UserResponse, err
 		return nil, errs.NewValidationError("incorrect username or password")
 	}
 
+	token, err := generateToken(user.Customer_id)
+	if err != nil {
+		logs.Error(err)
+		return nil, errs.NewUnexpectedError()
+	}
+
 	response := UserResponse{
 		Role:  user.Role,
-		Token: "fake jwt token",
+		Token: token,
 	}
 	return &response, nil
 }
@@ -88,4 +88,20 @@ func hashPassword(password string) (string, error) {
 func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+func generateToken(customerID int) (string, error) {
+	cliams := jwt.StandardClaims{
+		Issuer:    strconv.Itoa(customerID),
+		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+	}
+
+	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, cliams)
+
+	token, err := jwtToken.SignedString([]byte(viper.GetString("app.jwtSecret")))
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
 }

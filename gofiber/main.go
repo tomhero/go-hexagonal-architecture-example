@@ -10,6 +10,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/viper"
 )
@@ -25,6 +26,7 @@ func main() {
 
 	// NOTE : Official Middleware
 	app.Use(logger.New())
+	app.Use(recover.New())
 
 	app.Use(func(c *fiber.Ctx) error {
 		// Set some security headers:

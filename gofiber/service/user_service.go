@@ -1,7 +1,7 @@
 package service
 
 import (
-	"errors"
+	"gofiber/errs"
 	"gofiber/repository"
 
 	"golang.org/x/crypto/bcrypt"
@@ -33,7 +33,7 @@ func (s userService) Register(userRequest UserRequest) (*UserResponse, error) {
 
 	err = s.userRepo.Create(&user)
 	if err != nil {
-		return nil, err
+		return nil, errs.NewUnexpectedError()
 	}
 
 	response := UserResponse{
@@ -48,11 +48,11 @@ func (s userService) Register(userRequest UserRequest) (*UserResponse, error) {
 func (s userService) Login(username string, password string) (*UserResponse, error) {
 	user, err := s.userRepo.GetByUsername(username)
 	if err != nil {
-		return nil, errors.New("incorrect username or password")
+		return nil, errs.NewValidationError("incorrect username or password")
 	}
 
 	if !checkPasswordHash(password, user.Password) {
-		return nil, errors.New("incorrect username or password")
+		return nil, errs.NewValidationError("incorrect username or password")
 	}
 
 	response := UserResponse{

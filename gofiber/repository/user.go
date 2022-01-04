@@ -4,7 +4,7 @@ type User struct {
 	Username    string `db:"username"`
 	Password    string `db:"password"`
 	Role        string `db:"role"`
-	Customer_id int8   `db:"customer_id"`
+	Customer_id int    `db:"customer_id"`
 }
 
 type UserRepository interface {

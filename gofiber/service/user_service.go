@@ -2,6 +2,7 @@ package service
 
 import (
 	"gofiber/errs"
+	"gofiber/logs"
 	"gofiber/repository"
 
 	"golang.org/x/crypto/bcrypt"
@@ -28,11 +29,12 @@ func (s userService) Register(userRequest UserRequest) (*UserResponse, error) {
 		Username:    userRequest.Username,
 		Password:    hashedPassword,
 		Role:        fixRole,
-		Customer_id: int8(userRequest.CustomerID),
+		Customer_id: userRequest.CustomerID,
 	}
 
 	err = s.userRepo.Create(&user)
 	if err != nil {
+		logs.Error(err)
 		return nil, errs.NewUnexpectedError()
 	}
 
